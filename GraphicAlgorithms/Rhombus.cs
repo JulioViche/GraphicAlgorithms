@@ -33,10 +33,10 @@ namespace GraphicAlgorithms
             Line line3 = new Line(point3, point4);
             Line line4 = new Line(point4, point1);
 
-            await line1.DrawDDA(canvas, bitmap, false);
-            await line2.DrawDDA(canvas, bitmap, false);
-            await line3.DrawDDA(canvas, bitmap, false);
-            await line4.DrawDDA(canvas, bitmap, false);
+            await line1.DrawBresenham(canvas, bitmap, false);
+            await line2.DrawBresenham(canvas, bitmap, false);
+            await line3.DrawBresenham(canvas, bitmap, false);
+            await line4.DrawBresenham(canvas, bitmap, false);
         }
     }
 }

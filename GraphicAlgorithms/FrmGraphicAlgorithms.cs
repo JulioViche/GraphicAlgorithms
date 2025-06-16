@@ -13,10 +13,37 @@ namespace GraphicAlgorithms
     public partial class FrmGraphicAlgorithms : Form
     {
         private Bitmap bitmap;
+        private bool fillEnabled = true;
 
         public FrmGraphicAlgorithms()
         {
             InitializeComponent();
+            resetBitmap();
+        }
+
+        private void resetBitmap()
+        {
+            bitmap = new Bitmap(picCanvas.Width, picCanvas.Height);
+            picCanvas.BackColor = Color.White;
+            picCanvas.Image = bitmap;
+        }
+
+        private void disableButtons()
+        {
+            btnDrawDDA.Enabled = false;
+            btnDrawBresenham.Enabled = false;
+            btnDrawRhombus.Enabled = false;
+            btnCircleBresenham.Enabled = false;
+            fillEnabled = false;
+        }
+
+        private void enableButtons()
+        {
+            btnDrawDDA.Enabled = true;
+            btnDrawBresenham.Enabled = true;
+            btnDrawRhombus.Enabled = true;
+            btnCircleBresenham.Enabled = true;
+            fillEnabled = true;
         }
 
         private async void btnDrawDDA_Click(object sender, EventArgs e)
@@ -34,11 +61,13 @@ namespace GraphicAlgorithms
                 return;
             }
 
-            bitmap = new Bitmap(picCanvas.Width, picCanvas.Height);
-            picCanvas.Image = bitmap;
+            resetBitmap();
+            disableButtons();
 
             Line line = new Line(new Point(x0, picCanvas.Height - 1 - y0), new Point(x1, picCanvas.Height - 1 - y1));
             await line.DrawDDA(picCanvas, bitmap, true);
+
+            enableButtons();
         }
 
         private async void btnDrawBresenham_Click(object sender, EventArgs e)
@@ -56,11 +85,13 @@ namespace GraphicAlgorithms
                 return;
             }
 
-            bitmap = new Bitmap(picCanvas.Width, picCanvas.Height);
-            picCanvas.Image = bitmap;
+            resetBitmap();
+            disableButtons();
 
             Line line = new Line(new Point(x0, picCanvas.Height - 1 - y0), new Point(x1, picCanvas.Height - 1 - y1));
             await line.DrawBresenham(picCanvas, bitmap, true);
+
+            enableButtons();
         }
 
         private async void btnCircleBresenham_Click(object sender, EventArgs e)
@@ -83,30 +114,46 @@ namespace GraphicAlgorithms
                 return;
             }
 
-            int xc = txtCX.Text == "" ? 0 : int.Parse(txtCX.Text);
-            int yc = txtCY.Text == "" ? 0 : int.Parse(txtCY.Text);
-            int radius = txtCR.Text == "" ? 0 : int.Parse(txtCR.Text);
+            resetBitmap();
+            disableButtons();
 
-            bitmap = new Bitmap(picCanvas.Width, picCanvas.Height);
-            picCanvas.Image = bitmap;
-
-            Circle circle = new Circle(new Point(xc, picCanvas.Height - 1 - yc), radius);
+            Circle circle = new Circle(new Point(cx, picCanvas.Height - 1 - cy), cr);
             await circle.DrawBresenham(picCanvas, bitmap, true);
-        }
 
-        private async void btnFlowFill_Click(object sender, EventArgs e)
-        {
-            bitmap = new Bitmap(picCanvas.Width, picCanvas.Height);
-            picCanvas.Image = bitmap;
-
-            Rhombus rhombus = new Rhombus(new Point(picCanvas.Width / 2, picCanvas.Height / 2), 200, 350);
-            await rhombus.Draw(picCanvas, bitmap);
+            enableButtons();
         }
 
         private async void picCanvas_MouseClick(object sender, MouseEventArgs e)
         {
-            Console.WriteLine($"Mouse clicked at: {e.X}, {e.Y}");
-            await Filler.FlowFill(picCanvas, bitmap, new Point(e.X, e.Y), Color.Black);
+            if (!fillEnabled) return;
+
+            disableButtons();
+
+            await Filler.FlowFill(picCanvas, bitmap, new Point(e.X, e.Y), Color.Black, true);
+
+            enableButtons();
+        }
+
+        private async void btnDrawRhombus_Click(object sender, EventArgs e)
+        {
+            bool valid = true;
+
+            if (!int.TryParse(txtRhombusWidth.Text, out int rw) || rw < 0 || rw >= 400) valid = false;
+            if (!int.TryParse(txtRhombusHeight.Text, out int rh) || rh < 0 || rh >= 400) valid = false;
+
+            if (!valid)
+            {
+                MessageBox.Show("Todos los valores deben ser números enteros entre 0 y 399.", "Error de entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            resetBitmap();
+            disableButtons();
+
+            Rhombus rhombus = new Rhombus(new Point(picCanvas.Width / 2, picCanvas.Height / 2), rw, rh);
+            await rhombus.Draw(picCanvas, bitmap);
+
+            enableButtons();
         }
     }
 }

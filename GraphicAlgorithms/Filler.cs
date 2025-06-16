@@ -10,7 +10,7 @@ namespace GraphicAlgorithms
 {
     internal class Filler
     {
-        public static async Task FlowFill(PictureBox canvas, Bitmap bitmap, Point start, Color replacementColor)
+        public static async Task FlowFill(PictureBox canvas, Bitmap bitmap, Point start, Color replacementColor, bool animation)
         {
             if (start.X < 0 || start.X >= bitmap.Width || start.Y < 0 || start.Y >= bitmap.Height)
                 return;
@@ -26,7 +26,13 @@ namespace GraphicAlgorithms
 
             int count = 0;
 
-            Console.WriteLine($"FLOWFILL ALGORITHM:");
+            if (animation)
+            {
+                Console.WriteLine("------------------------------");
+                Console.WriteLine($"FLOWFILL ALGORITHM:");
+                Console.WriteLine("------------------------------");
+                Console.WriteLine($"  Clicked at: {start.X}, {start.Y}");
+            }
 
             while (pixels.Count > 0)
             {
@@ -44,18 +50,22 @@ namespace GraphicAlgorithms
 
                 visited.Add(p);
 
-                Console.WriteLine($"  Pixel: ({p.X}, {p.Y})");
-                if (count++ % 100 == 0) await Task.Delay(1);
+                if (animation)
+                {
+                    Console.WriteLine($"  Pixel: ({p.X}, {p.Y})");
+                    if (count++ % 100 == 0) await Task.Delay(1);
+                    canvas.Invalidate();
+                }
 
                 bitmap.SetPixel(p.X, p.Y, replacementColor);
-                canvas.Invalidate();
-
 
                 pixels.Push(new Point(p.X - 1, p.Y));
                 pixels.Push(new Point(p.X, p.Y + 1));
                 pixels.Push(new Point(p.X + 1, p.Y));
                 pixels.Push(new Point(p.X, p.Y - 1));
             }
+
+            canvas.Invalidate();
         }
     }
 }

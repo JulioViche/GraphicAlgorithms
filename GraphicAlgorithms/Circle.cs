@@ -24,7 +24,12 @@ namespace GraphicAlgorithms
             int y = radius;
             int d = 3 - 2 * radius;
 
-            if (animation) Console.WriteLine($"BRESENHAM CIRCLE SUBPROCESS:");
+            if (animation)
+            {
+                Console.WriteLine("------------------------------");
+                Console.WriteLine($"BRESENHAM CIRCLE SUBPROCESS:");
+                Console.WriteLine("------------------------------");
+            }
 
             while (x <= y)
             {
@@ -42,6 +47,7 @@ namespace GraphicAlgorithms
                     Console.WriteLine($"  Pixel ({xc + y}, {yc - x})");
                     Console.WriteLine($"  Pixel ({xc - y}, {yc - x})");
                     await Task.Delay(20);
+                    canvas.Invalidate();
                 }
 
                 bitmap.SetPixel(xc + x, yc + y, Color.Black);
@@ -52,8 +58,6 @@ namespace GraphicAlgorithms
                 bitmap.SetPixel(xc - y, yc + x, Color.Black);
                 bitmap.SetPixel(xc + y, yc - x, Color.Black);
                 bitmap.SetPixel(xc - y, yc - x, Color.Black);
-
-                canvas.Invalidate();
 
                 if (d < 0)
                 {
@@ -66,6 +70,9 @@ namespace GraphicAlgorithms
                 }
                 x++;
             }
+
+            canvas.Invalidate();
+            if (animation) Console.WriteLine("Algorithm finished!\n");
         }
     }
 }

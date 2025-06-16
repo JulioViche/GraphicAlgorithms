@@ -39,7 +39,12 @@ namespace GraphicAlgorithms
             float xk = start.X;
             float yk = start.Y;
 
-            if (animation) Console.WriteLine($"DDA LINE SUBPROCESS:");
+            if (animation)
+            {
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("DDA LINE:");
+                Console.WriteLine("------------------------------");
+            }
 
             for (int i = 0; i <= steps; i++)
             {
@@ -47,14 +52,17 @@ namespace GraphicAlgorithms
                 {
                     Console.WriteLine($"  Pixel ({Math.Round(xk)}, {Math.Round(yk)})");
                     await Task.Delay(10);
+                    canvas.Invalidate();
                 }
 
                 bitmap.SetPixel((int)Math.Round(xk), (int)Math.Round(yk), Color.Black);
-                canvas.Invalidate();
 
                 xk += xInc;
                 yk += yInc;
             }
+
+            canvas.Invalidate();
+            if (animation) Console.WriteLine("Algorithm finished!\n");
         }
 
         public async Task DrawBresenham(PictureBox canvas, Bitmap bitmap, bool animation)
@@ -84,6 +92,13 @@ namespace GraphicAlgorithms
             int ystep = y0 < y1 ? 1 : -1;
             int y = y0;
 
+            if (animation)
+            {
+                Console.WriteLine("------------------------------");
+                Console.WriteLine("BRESENHAM LINE:");
+                Console.WriteLine("------------------------------");
+            }
+
             for (int x = x0; x <= x1; x++)
             {
                 int drawX = steep ? y : x;
@@ -92,14 +107,11 @@ namespace GraphicAlgorithms
                 if (animation)
                 {
                     Console.WriteLine($"  Pixel ({drawX}, {drawY})");
-                    bitmap.SetPixel(drawX, drawY, Color.Black);
-                    canvas.Invalidate();
                     await Task.Delay(10);
+                    canvas.Invalidate();
                 }
-                else
-                {
-                    bitmap.SetPixel(drawX, drawY, Color.Black);
-                }
+
+                bitmap.SetPixel(drawX, drawY, Color.Black);
 
                 error -= dy;
                 if (error < 0)
@@ -108,6 +120,9 @@ namespace GraphicAlgorithms
                     error += dx;
                 }
             }
+
+            canvas.Invalidate();
+            if (animation) Console.WriteLine("Algorithm finished!\n");
         }
     }
 }
