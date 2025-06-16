@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -33,10 +34,10 @@ namespace GraphicAlgorithms
             Line line3 = new Line(point3, point4);
             Line line4 = new Line(point4, point1);
 
-            await line1.DrawBresenham(canvas, bitmap, false);
-            await line2.DrawBresenham(canvas, bitmap, false);
-            await line3.DrawBresenham(canvas, bitmap, false);
-            await line4.DrawBresenham(canvas, bitmap, false);
+            await line1.DrawBresenham(canvas, bitmap, false, new CancellationToken());
+            await line2.DrawBresenham(canvas, bitmap, false, new CancellationToken());
+            await line3.DrawBresenham(canvas, bitmap, false, new CancellationToken());
+            await line4.DrawBresenham(canvas, bitmap, false, new CancellationToken());
         }
     }
 }

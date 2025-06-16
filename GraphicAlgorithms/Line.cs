@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -30,8 +31,10 @@ namespace GraphicAlgorithms
             this.end = end;
         }
 
-        public async Task DrawDDA(PictureBox canvas, Bitmap bitmap, bool animation)
+        public async Task DrawDDA(PictureBox canvas, Bitmap bitmap, bool animationEnabled, CancellationToken token)
         {
+            AnimationManager am = new AnimationManager("DDA LINE", animationEnabled, canvas, bitmap);
+
             int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
             float xInc = (float)dx / steps;
             float yInc = (float)dy / steps;
@@ -39,34 +42,30 @@ namespace GraphicAlgorithms
             float xk = start.X;
             float yk = start.Y;
 
-            if (animation)
-            {
-                Console.WriteLine("------------------------------");
-                Console.WriteLine("DDA LINE:");
-                Console.WriteLine("------------------------------");
-            }
+            am.AlgorithmStart();
 
             for (int i = 0; i <= steps; i++)
             {
-                if (animation)
+                if (token.IsCancellationRequested)
                 {
-                    Console.WriteLine($"  Pixel ({Math.Round(xk)}, {Math.Round(yk)})");
-                    await Task.Delay(10);
-                    canvas.Invalidate();
+                    Console.WriteLine("Algorithm cancelled.");
+                    return;
                 }
 
-                bitmap.SetPixel((int)Math.Round(xk), (int)Math.Round(yk), Color.Black);
+                await am.SetPixel((int)Math.Round(xk), (int)Math.Round(yk), Color.Black, 2);
 
                 xk += xInc;
                 yk += yInc;
             }
 
             canvas.Invalidate();
-            if (animation) Console.WriteLine("Algorithm finished!\n");
+            am.AlgorithmEnd();
         }
 
-        public async Task DrawBresenham(PictureBox canvas, Bitmap bitmap, bool animation)
+        public async Task DrawBresenham(PictureBox canvas, Bitmap bitmap, bool animationEnabled, CancellationToken token)
         {
+            AnimationManager am = new AnimationManager("BRESENHAM LINE", animationEnabled, canvas, bitmap);
+
             int x0 = start.X;
             int y0 = start.Y;
             int x1 = end.X;
@@ -92,26 +91,20 @@ namespace GraphicAlgorithms
             int ystep = y0 < y1 ? 1 : -1;
             int y = y0;
 
-            if (animation)
-            {
-                Console.WriteLine("------------------------------");
-                Console.WriteLine("BRESENHAM LINE:");
-                Console.WriteLine("------------------------------");
-            }
+            am.AlgorithmStart();
 
             for (int x = x0; x <= x1; x++)
             {
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Algorithm cancelled.");
+                    return;
+                }
+
                 int drawX = steep ? y : x;
                 int drawY = steep ? x : y;
 
-                if (animation)
-                {
-                    Console.WriteLine($"  Pixel ({drawX}, {drawY})");
-                    await Task.Delay(10);
-                    canvas.Invalidate();
-                }
-
-                bitmap.SetPixel(drawX, drawY, Color.Black);
+                await am.SetPixel(drawX, drawY, Color.Black, 2);
 
                 error -= dy;
                 if (error < 0)
@@ -122,7 +115,7 @@ namespace GraphicAlgorithms
             }
 
             canvas.Invalidate();
-            if (animation) Console.WriteLine("Algorithm finished!\n");
+            am.AlgorithmEnd();
         }
     }
 }

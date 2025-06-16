@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,10 +11,12 @@ namespace GraphicAlgorithms
 {
     internal class Filler
     {
-        public static async Task FlowFill(PictureBox canvas, Bitmap bitmap, Point start, Color replacementColor, bool animation)
+        public static async Task FlowFill(PictureBox canvas, Bitmap bitmap, Point start, Color replacementColor, bool animationEnabled, CancellationToken token)
         {
             if (start.X < 0 || start.X >= bitmap.Width || start.Y < 0 || start.Y >= bitmap.Height)
                 return;
+
+            AnimationManager am = new AnimationManager("FLOWFILL ALGORITHM", animationEnabled, canvas, bitmap);
 
             Color targetColor = bitmap.GetPixel(start.X, start.Y);
 
@@ -26,16 +29,16 @@ namespace GraphicAlgorithms
 
             int count = 0;
 
-            if (animation)
-            {
-                Console.WriteLine("------------------------------");
-                Console.WriteLine($"FLOWFILL ALGORITHM:");
-                Console.WriteLine("------------------------------");
-                Console.WriteLine($"  Clicked at: {start.X}, {start.Y}");
-            }
+            am.AlgorithmStart();
 
             while (pixels.Count > 0)
             {
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Algorithm cancelled.");
+                    return;
+                }
+
                 Point p = pixels.Pop();
 
                 if (p.X < 0 || p.X >= bitmap.Width || p.Y < 0 || p.Y >= bitmap.Height)
@@ -50,14 +53,7 @@ namespace GraphicAlgorithms
 
                 visited.Add(p);
 
-                if (animation)
-                {
-                    Console.WriteLine($"  Pixel: ({p.X}, {p.Y})");
-                    if (count++ % 100 == 0) await Task.Delay(1);
-                    canvas.Invalidate();
-                }
-
-                bitmap.SetPixel(p.X, p.Y, replacementColor);
+                await am.SetPixel(p.X, p.Y, replacementColor, count++ % 100 == 0 ? 1 : 0);
 
                 pixels.Push(new Point(p.X - 1, p.Y));
                 pixels.Push(new Point(p.X, p.Y + 1));
@@ -66,6 +62,7 @@ namespace GraphicAlgorithms
             }
 
             canvas.Invalidate();
+            am.AlgorithmEnd();
         }
     }
 }

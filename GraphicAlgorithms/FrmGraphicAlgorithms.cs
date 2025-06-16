@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,6 +14,7 @@ namespace GraphicAlgorithms
     public partial class FrmGraphicAlgorithms : Form
     {
         private Bitmap bitmap;
+        private CancellationTokenSource cts;
         private bool fillEnabled = true;
 
         public FrmGraphicAlgorithms()
@@ -34,6 +36,8 @@ namespace GraphicAlgorithms
             btnDrawBresenham.Enabled = false;
             btnDrawRhombus.Enabled = false;
             btnCircleBresenham.Enabled = false;
+            btnClearCanvas.Enabled = false;
+            btnCancelAnimation.Enabled = true;
             fillEnabled = false;
         }
 
@@ -43,6 +47,8 @@ namespace GraphicAlgorithms
             btnDrawBresenham.Enabled = true;
             btnDrawRhombus.Enabled = true;
             btnCircleBresenham.Enabled = true;
+            btnClearCanvas.Enabled = true;
+            btnCancelAnimation.Enabled = false;
             fillEnabled = true;
         }
 
@@ -64,8 +70,11 @@ namespace GraphicAlgorithms
             resetBitmap();
             disableButtons();
 
+            cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+
             Line line = new Line(new Point(x0, picCanvas.Height - 1 - y0), new Point(x1, picCanvas.Height - 1 - y1));
-            await line.DrawDDA(picCanvas, bitmap, true);
+            await line.DrawDDA(picCanvas, bitmap, cbxAnimationsEnabled.Checked, token);
 
             enableButtons();
         }
@@ -88,8 +97,11 @@ namespace GraphicAlgorithms
             resetBitmap();
             disableButtons();
 
+            cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+
             Line line = new Line(new Point(x0, picCanvas.Height - 1 - y0), new Point(x1, picCanvas.Height - 1 - y1));
-            await line.DrawBresenham(picCanvas, bitmap, true);
+            await line.DrawBresenham(picCanvas, bitmap, cbxAnimationsEnabled.Checked, token);
 
             enableButtons();
         }
@@ -100,11 +112,17 @@ namespace GraphicAlgorithms
 
             if (!int.TryParse(txtCX.Text, out int cx) || cx < 0 || cx >= 400) valid = false;
             if (!int.TryParse(txtCY.Text, out int cy) || cy < 0 || cy >= 400) valid = false;
-            if (!int.TryParse(txtCR.Text, out int cr) || cr == 0) valid = false;
+            if (!int.TryParse(txtCR.Text, out int cr)) valid = false;
 
             if (!valid)
             {
                 MessageBox.Show("Todos los valores deben ser números enteros entre 0 y 399.", "Error de entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (cr <= 0)
+            {
+                MessageBox.Show("El radio debe ser mayor a cero", "Error de entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -117,8 +135,11 @@ namespace GraphicAlgorithms
             resetBitmap();
             disableButtons();
 
+            cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+
             Circle circle = new Circle(new Point(cx, picCanvas.Height - 1 - cy), cr);
-            await circle.DrawBresenham(picCanvas, bitmap, true);
+            await circle.DrawBresenham(picCanvas, bitmap, cbxAnimationsEnabled.Checked, token);
 
             enableButtons();
         }
@@ -129,7 +150,10 @@ namespace GraphicAlgorithms
 
             disableButtons();
 
-            await Filler.FlowFill(picCanvas, bitmap, new Point(e.X, e.Y), Color.Black, true);
+            cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+
+            await Filler.FlowFill(picCanvas, bitmap, new Point(e.X, e.Y), Color.Black, cbxAnimationsEnabled.Checked, token);
 
             enableButtons();
         }
@@ -138,12 +162,12 @@ namespace GraphicAlgorithms
         {
             bool valid = true;
 
-            if (!int.TryParse(txtRhombusWidth.Text, out int rw) || rw < 0 || rw >= 400) valid = false;
-            if (!int.TryParse(txtRhombusHeight.Text, out int rh) || rh < 0 || rh >= 400) valid = false;
+            if (!int.TryParse(txtRhombusWidth.Text, out int rw) || rw <= 0 || rw >= 400) valid = false;
+            if (!int.TryParse(txtRhombusHeight.Text, out int rh) || rh <= 0 || rh >= 400) valid = false;
 
             if (!valid)
             {
-                MessageBox.Show("Todos los valores deben ser números enteros entre 0 y 399.", "Error de entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Todos los valores deben ser números enteros mayores a 0 y menores a 399.", "Error de entrada", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -154,6 +178,16 @@ namespace GraphicAlgorithms
             await rhombus.Draw(picCanvas, bitmap);
 
             enableButtons();
+        }
+
+        private void btnCancelAnimation_Click(object sender, EventArgs e)
+        {
+            if (cts != null) cts.Cancel();
+        }
+
+        private void btnClearCanvas_Click(object sender, EventArgs e)
+        {
+            resetBitmap();
         }
     }
 }

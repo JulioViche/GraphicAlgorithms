@@ -56,6 +56,12 @@
             this.txtRhombusWidth = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.btnCancelAnimation = new System.Windows.Forms.Button();
+            this.cbxAnimationsEnabled = new System.Windows.Forms.CheckBox();
+            this.btnClearCanvas = new System.Windows.Forms.Button();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,7 +76,7 @@
             // 
             // btnDrawDDA
             // 
-            this.btnDrawDDA.Location = new System.Drawing.Point(436, 101);
+            this.btnDrawDDA.Location = new System.Drawing.Point(445, 101);
             this.btnDrawDDA.Name = "btnDrawDDA";
             this.btnDrawDDA.Size = new System.Drawing.Size(75, 23);
             this.btnDrawDDA.TabIndex = 1;
@@ -80,7 +86,7 @@
             // 
             // btnDrawBresenham
             // 
-            this.btnDrawBresenham.Location = new System.Drawing.Point(531, 101);
+            this.btnDrawBresenham.Location = new System.Drawing.Point(540, 101);
             this.btnDrawBresenham.Name = "btnDrawBresenham";
             this.btnDrawBresenham.Size = new System.Drawing.Size(75, 23);
             this.btnDrawBresenham.TabIndex = 2;
@@ -90,7 +96,7 @@
             // 
             // btnCircleBresenham
             // 
-            this.btnCircleBresenham.Location = new System.Drawing.Point(436, 220);
+            this.btnCircleBresenham.Location = new System.Drawing.Point(445, 237);
             this.btnCircleBresenham.Name = "btnCircleBresenham";
             this.btnCircleBresenham.Size = new System.Drawing.Size(75, 23);
             this.btnCircleBresenham.TabIndex = 3;
@@ -102,7 +108,7 @@
             // 
             this.lblLine.AutoSize = true;
             this.lblLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLine.Location = new System.Drawing.Point(434, 30);
+            this.lblLine.Location = new System.Drawing.Point(443, 30);
             this.lblLine.Name = "lblLine";
             this.lblLine.Size = new System.Drawing.Size(45, 16);
             this.lblLine.TabIndex = 4;
@@ -112,7 +118,7 @@
             // 
             this.lblCircle.AutoSize = true;
             this.lblCircle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCircle.Location = new System.Drawing.Point(434, 149);
+            this.lblCircle.Location = new System.Drawing.Point(443, 166);
             this.lblCircle.Name = "lblCircle";
             this.lblCircle.Size = new System.Drawing.Size(55, 16);
             this.lblCircle.TabIndex = 5;
@@ -120,7 +126,7 @@
             // 
             // txtX0
             // 
-            this.txtX0.Location = new System.Drawing.Point(474, 49);
+            this.txtX0.Location = new System.Drawing.Point(483, 49);
             this.txtX0.Name = "txtX0";
             this.txtX0.Size = new System.Drawing.Size(38, 20);
             this.txtX0.TabIndex = 6;
@@ -128,7 +134,7 @@
             // 
             // txtY0
             // 
-            this.txtY0.Location = new System.Drawing.Point(474, 75);
+            this.txtY0.Location = new System.Drawing.Point(483, 75);
             this.txtY0.Name = "txtY0";
             this.txtY0.Size = new System.Drawing.Size(38, 20);
             this.txtY0.TabIndex = 7;
@@ -136,7 +142,7 @@
             // 
             // txtX1
             // 
-            this.txtX1.Location = new System.Drawing.Point(569, 49);
+            this.txtX1.Location = new System.Drawing.Point(578, 49);
             this.txtX1.Name = "txtX1";
             this.txtX1.Size = new System.Drawing.Size(38, 20);
             this.txtX1.TabIndex = 8;
@@ -144,7 +150,7 @@
             // 
             // txtY1
             // 
-            this.txtY1.Location = new System.Drawing.Point(569, 75);
+            this.txtY1.Location = new System.Drawing.Point(578, 75);
             this.txtY1.Name = "txtY1";
             this.txtY1.Size = new System.Drawing.Size(38, 20);
             this.txtY1.TabIndex = 9;
@@ -153,7 +159,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(434, 52);
+            this.label1.Location = new System.Drawing.Point(443, 52);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(27, 13);
             this.label1.TabIndex = 10;
@@ -162,7 +168,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(434, 78);
+            this.label2.Location = new System.Drawing.Point(443, 78);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(27, 13);
             this.label2.TabIndex = 11;
@@ -171,7 +177,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(528, 52);
+            this.label3.Location = new System.Drawing.Point(537, 52);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(27, 13);
             this.label3.TabIndex = 12;
@@ -180,7 +186,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(529, 78);
+            this.label4.Location = new System.Drawing.Point(538, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(27, 13);
             this.label4.TabIndex = 13;
@@ -189,7 +195,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(434, 169);
+            this.label5.Location = new System.Drawing.Point(443, 186);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(15, 13);
             this.label5.TabIndex = 14;
@@ -198,7 +204,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(434, 197);
+            this.label6.Location = new System.Drawing.Point(443, 214);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(15, 13);
             this.label6.TabIndex = 15;
@@ -206,7 +212,7 @@
             // 
             // txtCX
             // 
-            this.txtCX.Location = new System.Drawing.Point(473, 168);
+            this.txtCX.Location = new System.Drawing.Point(482, 185);
             this.txtCX.Name = "txtCX";
             this.txtCX.Size = new System.Drawing.Size(38, 20);
             this.txtCX.TabIndex = 17;
@@ -214,7 +220,7 @@
             // 
             // txtCY
             // 
-            this.txtCY.Location = new System.Drawing.Point(473, 194);
+            this.txtCY.Location = new System.Drawing.Point(482, 211);
             this.txtCY.Name = "txtCY";
             this.txtCY.Size = new System.Drawing.Size(38, 20);
             this.txtCY.TabIndex = 18;
@@ -222,7 +228,7 @@
             // 
             // txtCR
             // 
-            this.txtCR.Location = new System.Drawing.Point(569, 166);
+            this.txtCR.Location = new System.Drawing.Point(578, 183);
             this.txtCR.Name = "txtCR";
             this.txtCR.Size = new System.Drawing.Size(38, 20);
             this.txtCR.TabIndex = 19;
@@ -231,7 +237,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(529, 171);
+            this.label7.Location = new System.Drawing.Point(538, 188);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(13, 13);
             this.label7.TabIndex = 20;
@@ -239,7 +245,7 @@
             // 
             // btnDrawRhombus
             // 
-            this.btnDrawRhombus.Location = new System.Drawing.Point(437, 310);
+            this.btnDrawRhombus.Location = new System.Drawing.Point(445, 354);
             this.btnDrawRhombus.Name = "btnDrawRhombus";
             this.btnDrawRhombus.Size = new System.Drawing.Size(90, 23);
             this.btnDrawRhombus.TabIndex = 21;
@@ -250,17 +256,17 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(433, 381);
+            this.label8.Location = new System.Drawing.Point(647, 216);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(250, 13);
+            this.label8.Size = new System.Drawing.Size(194, 26);
             this.label8.TabIndex = 22;
-            this.label8.Text = "Haz click en cualquier parte del canvas para pintar.";
+            this.label8.Text = "Haz click en cualquier parte del canvas\r\npara pintar.";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(434, 265);
+            this.label9.Location = new System.Drawing.Point(443, 309);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(57, 16);
             this.label9.TabIndex = 23;
@@ -270,7 +276,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(433, 362);
+            this.label10.Location = new System.Drawing.Point(647, 195);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(61, 16);
             this.label10.TabIndex = 24;
@@ -278,7 +284,7 @@
             // 
             // txtRhombusHeight
             // 
-            this.txtRhombusHeight.Location = new System.Drawing.Point(568, 284);
+            this.txtRhombusHeight.Location = new System.Drawing.Point(577, 328);
             this.txtRhombusHeight.Name = "txtRhombusHeight";
             this.txtRhombusHeight.Size = new System.Drawing.Size(38, 20);
             this.txtRhombusHeight.TabIndex = 28;
@@ -286,7 +292,7 @@
             // 
             // txtRhombusWidth
             // 
-            this.txtRhombusWidth.Location = new System.Drawing.Point(474, 284);
+            this.txtRhombusWidth.Location = new System.Drawing.Point(483, 328);
             this.txtRhombusWidth.Name = "txtRhombusWidth";
             this.txtRhombusWidth.Size = new System.Drawing.Size(38, 20);
             this.txtRhombusWidth.TabIndex = 27;
@@ -295,7 +301,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(529, 285);
+            this.label11.Location = new System.Drawing.Point(537, 331);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(27, 13);
             this.label11.TabIndex = 26;
@@ -304,17 +310,84 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(433, 287);
+            this.label12.Location = new System.Drawing.Point(443, 331);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(40, 13);
             this.label12.TabIndex = 25;
             this.label12.Text = "ancho:";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(647, 30);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(168, 16);
+            this.label13.TabIndex = 29;
+            this.label13.Text = "Gestor de Animaciones";
+            // 
+            // btnCancelAnimation
+            // 
+            this.btnCancelAnimation.Location = new System.Drawing.Point(650, 73);
+            this.btnCancelAnimation.Name = "btnCancelAnimation";
+            this.btnCancelAnimation.Size = new System.Drawing.Size(116, 23);
+            this.btnCancelAnimation.TabIndex = 30;
+            this.btnCancelAnimation.Text = "Cancelar Animación";
+            this.btnCancelAnimation.UseVisualStyleBackColor = true;
+            this.btnCancelAnimation.Click += new System.EventHandler(this.btnCancelAnimation_Click);
+            // 
+            // cbxAnimationsEnabled
+            // 
+            this.cbxAnimationsEnabled.AutoSize = true;
+            this.cbxAnimationsEnabled.Checked = true;
+            this.cbxAnimationsEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbxAnimationsEnabled.Location = new System.Drawing.Point(650, 52);
+            this.cbxAnimationsEnabled.Name = "cbxAnimationsEnabled";
+            this.cbxAnimationsEnabled.Size = new System.Drawing.Size(135, 17);
+            this.cbxAnimationsEnabled.TabIndex = 31;
+            this.cbxAnimationsEnabled.Text = "Animaciones activadas";
+            this.cbxAnimationsEnabled.UseVisualStyleBackColor = true;
+            // 
+            // btnClearCanvas
+            // 
+            this.btnClearCanvas.Location = new System.Drawing.Point(650, 101);
+            this.btnClearCanvas.Name = "btnClearCanvas";
+            this.btnClearCanvas.Size = new System.Drawing.Size(116, 23);
+            this.btnClearCanvas.TabIndex = 32;
+            this.btnClearCanvas.Text = "Limpiar Canvas";
+            this.btnClearCanvas.UseVisualStyleBackColor = true;
+            this.btnClearCanvas.Click += new System.EventHandler(this.btnClearCanvas_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(647, 309);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(122, 16);
+            this.label14.TabIndex = 33;
+            this.label14.Text = "Pixeles pintados";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(647, 330);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(189, 26);
+            this.label15.TabIndex = 34;
+            this.label15.Text = "La lista de píxeles pintados se muestra\r\nen la consola de Visual Studio.";
+            // 
             // FrmGraphicAlgorithms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(868, 424);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.btnClearCanvas);
+            this.Controls.Add(this.cbxAnimationsEnabled);
+            this.Controls.Add(this.btnCancelAnimation);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.txtRhombusHeight);
             this.Controls.Add(this.txtRhombusWidth);
             this.Controls.Add(this.label11);
@@ -344,7 +417,7 @@
             this.Controls.Add(this.btnDrawDDA);
             this.Controls.Add(this.picCanvas);
             this.Name = "FrmGraphicAlgorithms";
-            this.Text = "FrmGraphicAlgorithms";
+            this.Text = "Algoritmos Gráficos";
             ((System.ComponentModel.ISupportInitialize)(this.picCanvas)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -381,5 +454,11 @@
         private System.Windows.Forms.TextBox txtRhombusWidth;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button btnCancelAnimation;
+        private System.Windows.Forms.CheckBox cbxAnimationsEnabled;
+        private System.Windows.Forms.Button btnClearCanvas;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
     }
 }

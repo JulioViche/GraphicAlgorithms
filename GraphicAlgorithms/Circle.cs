@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,46 +19,35 @@ namespace GraphicAlgorithms
             this.radius = radius;
         }
 
-        public async Task DrawBresenham(PictureBox canvas, Bitmap bitmap, bool animation)
+        public async Task DrawBresenham(PictureBox canvas, Bitmap bitmap, bool animationEnabled, CancellationToken token)
         {
+            AnimationManager am = new AnimationManager("BRESENHAM CIRCLE", animationEnabled, canvas, bitmap);
+
             int x = 0;
             int y = radius;
             int d = 3 - 2 * radius;
 
-            if (animation)
-            {
-                Console.WriteLine("------------------------------");
-                Console.WriteLine($"BRESENHAM CIRCLE SUBPROCESS:");
-                Console.WriteLine("------------------------------");
-            }
+            am.AlgorithmStart();
 
             while (x <= y)
             {
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Algorithm cancelled.");
+                    return;
+                }
+
                 int xc = center.X;
                 int yc = center.Y;
 
-                if (animation)
-                {
-                    Console.WriteLine($"  Pixel ({xc + x}, {yc + y})");
-                    Console.WriteLine($"  Pixel ({xc - x}, {yc + y})");
-                    Console.WriteLine($"  Pixel ({xc + x}, {yc - y})");
-                    Console.WriteLine($"  Pixel ({xc - x}, {yc - y})");
-                    Console.WriteLine($"  Pixel ({xc + y}, {yc + x})");
-                    Console.WriteLine($"  Pixel ({xc - y}, {yc + x})");
-                    Console.WriteLine($"  Pixel ({xc + y}, {yc - x})");
-                    Console.WriteLine($"  Pixel ({xc - y}, {yc - x})");
-                    await Task.Delay(20);
-                    canvas.Invalidate();
-                }
-
-                bitmap.SetPixel(xc + x, yc + y, Color.Black);
-                bitmap.SetPixel(xc - x, yc + y, Color.Black);
-                bitmap.SetPixel(xc + x, yc - y, Color.Black);
-                bitmap.SetPixel(xc - x, yc - y, Color.Black);
-                bitmap.SetPixel(xc + y, yc + x, Color.Black);
-                bitmap.SetPixel(xc - y, yc + x, Color.Black);
-                bitmap.SetPixel(xc + y, yc - x, Color.Black);
-                bitmap.SetPixel(xc - y, yc - x, Color.Black);
+                await am.SetPixel(xc + x, yc + y, Color.Black, 1);
+                await am.SetPixel(xc - x, yc + y, Color.Black, 0);
+                await am.SetPixel(xc + x, yc - y, Color.Black, 0);
+                await am.SetPixel(xc - x, yc - y, Color.Black, 0);
+                await am.SetPixel(xc + y, yc + x, Color.Black, 0);
+                await am.SetPixel(xc - y, yc + x, Color.Black, 0);
+                await am.SetPixel(xc + y, yc - x, Color.Black, 0);
+                await am.SetPixel(xc - y, yc - x, Color.Black, 0);
 
                 if (d < 0)
                 {
@@ -72,7 +62,7 @@ namespace GraphicAlgorithms
             }
 
             canvas.Invalidate();
-            if (animation) Console.WriteLine("Algorithm finished!\n");
+            am.AlgorithmEnd();
         }
     }
 }
