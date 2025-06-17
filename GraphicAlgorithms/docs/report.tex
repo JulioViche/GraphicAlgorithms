@@ -1,0 +1,728 @@
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\title{Implementación de Algoritmos Gráficos Básicos}
+\author{Julio Enrique Viche Castillo}
+\date{\today}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    pdfborder={0 0 0}
+}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\href{https://github.com/JulioViche/GraphicAlgorithms}{Repositorio del Proyecto en GitHub}
+\end{center}
+
+\section{Introducción}
+Este trabajo presenta la implementación de algoritmos gráficos clásicos (DDA, Bresenham y FlowFill) en una aplicación Windows Forms moderna. El sistema desarrollado combina la precisión matemática de estos algoritmos con características contemporáneas como programación asíncrona y una interfaz gráfica interactiva, permitiendo a los usuarios visualizar y controlar el proceso de trazado de líneas, círculos y relleno de áreas.
+
+\section{Descripción de la Interfaz}
+
+\subsection{Componentes Principales}
+La interfaz gráfica se compone de:
+
+\begin{itemize}
+    \item \textbf{Canvas}: PictureBox de 400x400 píxeles
+    \item \textbf{Panel de Control}: Agrupado por secciones
+\end{itemize}
+
+\subsection{Secciones de Control}
+
+\subsubsection{Dibujo de Líneas}
+\begin{itemize}
+    \item Campos de entrada: $(x_0,y_0)$ y $(x_1,y_1)$
+    \item Botón Draw DDA
+    \item Botón Draw Bresenham
+\end{itemize}
+
+\subsubsection{Dibujo de Círculos}
+\begin{itemize}
+    \item Campos de entrada: centro $(cx,cy)$ y radio $(r)$
+    \item Botón Circle Bresenham
+\end{itemize}
+
+\subsubsection{Dibujo de Rombo}
+\begin{itemize}
+    \item Campos de entrada: ancho y alto
+    \item Botón Draw Rhombus
+\end{itemize}
+
+\subsection{Controles Generales}
+\begin{itemize}
+    \item Checkbox Animations Enabled
+    \item Botón Cancel Animation
+    \item Botón Clear Canvas
+\end{itemize}
+
+\subsection{Herramienta de Relleno}
+\begin{itemize}
+    \item Activación mediante click en el canvas
+    \item Estado controlado por variable fillEnabled
+    \item Color de relleno predefinido (Negro)
+\end{itemize}
+
+\subsection{Estados de la Interfaz}
+\subsubsection{Estado Normal}
+\begin{itemize}
+    \item Todos los botones habilitados
+    \item Relleno disponible
+    \item Canvas receptivo a clicks
+\end{itemize}
+
+\subsubsection{Estado de Animación}
+\begin{itemize}
+    \item Botones de dibujo deshabilitados
+    \item Solo Cancel Animation habilitado
+    \item Relleno temporalmente desactivado
+\end{itemize}
+
+\section{Algoritmos Implementados}
+
+\subsection{Algoritmo DDA (Digital Differential Analyzer)}
+\begin{lstlisting}
+public async Task DrawDDA
+(
+    PictureBox canvas,
+    Bitmap bitmap,
+    bool animationEnabled,
+    CancellationToken token
+)
+{
+    AnimationManager am = new AnimationManager
+    (
+        "DDA LINE",
+        animationEnabled,
+        canvas,
+        bitmap
+    );
+
+    int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+    float xInc = (float)dx / steps;
+    float yInc = (float)dy / steps;
+
+    float xk = start.X;
+    float yk = start.Y;
+
+    am.AlgorithmStart();
+
+    for (int i = 0; i <= steps; i++)
+    {
+        if (token.IsCancellationRequested)
+        {
+            Console.WriteLine("Algorithm cancelled.");
+            return;
+        }
+
+        await am.SetPixel
+        (
+            (int)Math.Round(xk),
+            (int)Math.Round(yk),
+            Color.Black,
+            2
+        );
+
+        xk += xInc;
+        yk += yInc;
+    }
+
+    canvas.Invalidate();
+    am.AlgorithmEnd();
+}
+\end{lstlisting}
+
+\subsection{Análisis del Algoritmo DDA}
+
+\subsubsection{Implementación Base}
+El algoritmo implementa un trazador de líneas asíncrono con los siguientes componentes:
+
+\begin{lstlisting}
+steps = Math.Max(Math.Abs(dx), Math.Abs(dy))
+xInc = dx / steps
+yInc = dy / steps
+\end{lstlisting}
+
+\subsubsection{Componentes Principales}
+\paragraph{Gestión de Animación}
+\begin{itemize}
+    \item Utiliza AnimationManager para control de dibujo
+    \item Parámetros:
+    \begin{itemize}
+        \item Nombre del algoritmo: "DDA LINE"
+        \item Estado de animación
+        \item Canvas y bitmap para renderizado
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Cálculo de Incrementos}
+\begin{equation}
+    xInc = \frac{dx}{steps}, \quad yInc = \frac{dy}{steps}
+\end{equation}
+
+\subsubsection{Proceso Iterativo}
+Para cada paso $i$ de 0 a $steps$:
+\begin{enumerate}
+    \item Redondeo de coordenadas: $(x_k, y_k)$
+    \item Dibujo de píxel mediante SetPixel
+    \item Incremento de posición: $x_k += xInc$, $y_k += yInc$
+\end{enumerate}
+
+\subsubsection{Características Técnicas}
+\paragraph{Eficiencia}
+\begin{itemize}
+    \item \textbf{Complejidad Temporal}: $O(steps)$
+    \item \textbf{Complejidad Espacial}: $O(1)$
+    \item \textbf{Operaciones por iteración}:
+    \begin{itemize}
+        \item 2 sumas en punto flotante
+        \item 2 operaciones de redondeo
+        \item 1 operación de dibujo asíncrona
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Características Asíncronas}
+\begin{itemize}
+    \item Implementación mediante async/await
+    \item Control de cancelación vía CancellationToken
+    \item Actualización visual mediante Invalidate()
+\end{itemize}
+
+\subsubsection{Aspectos de Implementación}
+\begin{itemize}
+    \item Uso de punto flotante para precisión
+    \item Sistema de cancelación integrado
+    \item Gestión de animaciones
+    \item Actualización visual del canvas
+\end{itemize}
+
+\subsection{Algoritmo de Bresenham para Líneas}
+\begin{lstlisting}
+public async Task DrawBresenham
+(
+    PictureBox canvas,
+    Bitmap bitmap,
+    bool animationEnabled,
+    CancellationToken token
+)
+{
+    AnimationManager am = new AnimationManager
+    (
+        "BRESENHAM LINE",
+        animationEnabled,
+        canvas,
+        bitmap
+    );
+
+    int x0 = start.X;
+    int y0 = start.Y;
+    int x1 = end.X;
+    int y1 = end.Y;
+
+    bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
+
+    if (steep)
+    {
+        (x0, y0) = (y0, x0);
+        (x1, y1) = (y1, x1);
+    }
+
+    if (x0 > x1)
+    {
+        (x0, x1) = (x1, x0);
+        (y0, y1) = (y1, y0);
+    }
+
+    int dx = x1 - x0;
+    int dy = Math.Abs(y1 - y0);
+    int error = dx / 2;
+    int ystep = y0 < y1 ? 1 : -1;
+    int y = y0;
+
+    am.AlgorithmStart();
+
+    for (int x = x0; x <= x1; x++)
+    {
+        if (token.IsCancellationRequested)
+        {
+            Console.WriteLine("Algorithm cancelled.");
+            return;
+        }
+
+        int drawX = steep ? y : x;
+        int drawY = steep ? x : y;
+
+        await am.SetPixel
+        (
+            drawX,
+            drawY,
+            Color.Black,
+            2
+        );
+
+        error -= dy;
+        if (error < 0)
+        {
+            y += ystep;
+            error += dx;
+        }
+    }
+
+    canvas.Invalidate();
+    am.AlgorithmEnd();
+}
+\end{lstlisting}
+
+\subsection{Análisis del Algoritmo de Bresenham}
+
+\subsubsection{Implementación Base}
+El algoritmo implementa un trazador de líneas asíncrono optimizado:
+
+\paragraph{Preprocesamiento}
+\begin{itemize}
+    \item Detección de pendiente pronunciada (steep):
+    \begin{equation}
+        steep = |y_1 - y_0| > |x_1 - x_0|
+    \end{equation}
+    \item Intercambio de coordenadas si es necesario
+    \item Garantiza dirección x positiva
+\end{itemize}
+
+\subsubsection{Componentes Principales}
+\paragraph{Variables de Control}
+\begin{itemize}
+    \item $dx = x_1 - x_0$
+    \item $dy = |y_1 - y_0|$
+    \item $error = dx/2$ (error inicial)
+    \item $ystep = \pm1$ (dirección del incremento en y)
+\end{itemize}
+
+\paragraph{Gestión de Animación}
+\begin{itemize}
+    \item AnimationManager con identificador "BRESENHAM LINE"
+    \item Control de estado y visualización
+\end{itemize}
+
+\subsubsection{Proceso Iterativo}
+Para cada $x$ de $x_0$ a $x_1$:
+\begin{enumerate}
+    \item Determinar coordenadas de dibujo según steep
+    \item Dibujar píxel en $(drawX, drawY)$
+    \item Actualizar error: $error -= dy$
+    \item Si $error < 0$:
+    \begin{itemize}
+        \item Incrementar y: $y += ystep$
+        \item Corregir error: $error += dx$
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Características Técnicas}
+\paragraph{Eficiencia}
+\begin{itemize}
+    \item \textbf{Complejidad Temporal}: $O(dx)$
+    \item \textbf{Complejidad Espacial}: $O(1)$
+    \item \textbf{Operaciones por iteración}:
+    \begin{itemize}
+        \item 1-2 operaciones enteras
+        \item 1 comparación
+        \item 1 operación de dibujo asíncrona
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Características Asíncronas}
+\begin{itemize}
+    \item Implementación mediante async/await
+    \item Soporte para cancelación
+    \item Actualización visual del canvas
+\end{itemize}
+
+\subsubsection{Optimizaciones}
+\begin{itemize}
+    \item Uso exclusivo de aritmética entera
+    \item Manejo de casos especiales (steep)
+    \item Normalización de dirección x
+    \item Error inicial optimizado ($dx/2$)
+\end{itemize}
+
+\subsection{Algoritmo de Bresenham para Círculos}
+\begin{lstlisting}
+public async Task DrawBresenham
+(
+    PictureBox canvas,
+    Bitmap bitmap,
+    bool animationEnabled,
+    CancellationToken token
+)
+{
+    AnimationManager am = new AnimationManager
+    (
+        "BRESENHAM CIRCLE",
+        animationEnabled,
+        canvas,
+        bitmap
+    );
+
+    int x = 0;
+    int y = radius;
+    int d = 3 - 2 * radius;
+
+    am.AlgorithmStart();
+
+    while (x <= y)
+    {
+        if (token.IsCancellationRequested)
+        {
+            Console.WriteLine("Algorithm cancelled.");
+            return;
+        }
+
+        int xc = center.X;
+        int yc = center.Y;
+
+        await am.SetPixel(xc + x, yc + y, Color.Black, 1);
+        await am.SetPixel(xc - x, yc + y, Color.Black, 0);
+        await am.SetPixel(xc + x, yc - y, Color.Black, 0);
+        await am.SetPixel(xc - x, yc - y, Color.Black, 0);
+        await am.SetPixel(xc + y, yc + x, Color.Black, 0);
+        await am.SetPixel(xc - y, yc + x, Color.Black, 0);
+        await am.SetPixel(xc + y, yc - x, Color.Black, 0);
+        await am.SetPixel(xc - y, yc - x, Color.Black, 0);
+
+        if (d < 0)
+        {
+            d += 4 * x + 6;
+        }
+        else
+        {
+            d += 4 * (x - y) + 10;
+            y--;
+        }
+        x++;
+    }
+
+    canvas.Invalidate();
+    am.AlgorithmEnd();
+}
+\end{lstlisting}
+
+\subsection{Análisis del Algoritmo de Bresenham para Círculos}
+
+\subsubsection{Implementación Base}
+El algoritmo implementa un trazador de círculos asíncrono utilizando simetría de octantes:
+
+\paragraph{Inicialización}
+\begin{itemize}
+    \item Variables de control iniciales:
+        \begin{align*}
+            x &= 0 \\
+            y &= radio \\
+            d &= 3 - 2 * radio \text{ (discriminante)}
+        \end{align*}
+\end{itemize}
+
+\subsubsection{Componentes Principales}
+\paragraph{Gestión de Animación}
+\begin{itemize}
+    \item AnimationManager con identificador "BRESENHAM CIRCLE"
+    \item Control asíncrono del dibujado
+\end{itemize}
+
+\paragraph{Simetría de Octantes}
+Dibuja 8 píxeles simétricos para cada punto calculado:
+\begin{itemize}
+    \item $(x_c \pm x, y_c \pm y)$
+    \item $(x_c \pm y, y_c \pm x)$
+\end{itemize}
+
+\subsubsection{Proceso Iterativo}
+Mientras $x \leq y$:
+\begin{enumerate}
+    \item Dibujar 8 píxeles simétricos
+    \item Actualizar discriminante $d$:
+    \begin{itemize}
+        \item Si $d < 0$: $d += 4x + 6$
+        \item Si $d \geq 0$: $d += 4(x-y) + 10$ y $y--$
+    \end{itemize}
+    \item Incrementar $x$
+\end{enumerate}
+
+\subsubsection{Características Técnicas}
+\paragraph{Eficiencia}
+\begin{itemize}
+    \item \textbf{Complejidad Temporal}: $O(r)$ donde r es el radio
+    \item \textbf{Complejidad Espacial}: $O(1)$
+    \item \textbf{Operaciones por iteración}:
+    \begin{itemize}
+        \item 8 operaciones de dibujo asíncronas
+        \item 2-3 operaciones aritméticas enteras
+        \item 1 comparación
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Características Asíncronas}
+\begin{itemize}
+    \item Implementación mediante async/await
+    \item Soporte para cancelación
+    \item Actualización visual del canvas
+\end{itemize}
+
+\subsubsection{Optimizaciones}
+\begin{itemize}
+    \item Uso exclusivo de aritmética entera
+    \item Aprovechamiento de simetría octantal
+    \item Minimización de cálculos por iteración
+\end{itemize}
+
+\subsection{Algoritmo de Relleno (FloodFill)}
+\begin{lstlisting}
+public static async Task FlowFill
+(
+    PictureBox canvas,
+    Bitmap bitmap,
+    Point start,
+    Color replacementColor,
+    bool animationEnabled,
+    CancellationToken token
+)
+{
+    if
+    (
+        start.X < 0 || start.X >= bitmap.Width ||
+        start.Y < 0 || start.Y >= bitmap.Height
+    )
+        return;
+
+    AnimationManager am = new AnimationManager
+    (
+        "FLOWFILL ALGORITHM",
+        animationEnabled,
+        canvas,
+        bitmap
+    );
+
+    Color targetColor = bitmap.GetPixel(start.X, start.Y);
+
+    if (targetColor.ToArgb() == replacementColor.ToArgb())
+        return;
+
+    HashSet<Point> visited = new HashSet<Point>();
+    Stack<Point> pixels = new Stack<Point>();
+    pixels.Push(start);
+
+    int count = 0;
+
+    am.AlgorithmStart();
+
+    while (pixels.Count > 0)
+    {
+        if (token.IsCancellationRequested)
+        {
+            Console.WriteLine("Algorithm cancelled.");
+            return;
+        }
+
+        Point p = pixels.Pop();
+
+        if
+        (
+            p.X < 0 || p.X >= bitmap.Width ||
+            p.Y < 0 || p.Y >= bitmap.Height
+        )
+            continue;
+
+        if (visited.Contains(p))
+            continue;
+
+        Color currentColor = bitmap.GetPixel(p.X, p.Y);
+        if (currentColor.ToArgb() != targetColor.ToArgb())
+            continue;
+
+        visited.Add(p);
+
+        await am.SetPixel
+        (
+            p.X,
+            p.Y,
+            replacementColor,
+            count++ % 100 == 0 ? 1 : 0
+        );
+
+        pixels.Push(new Point(p.X - 1, p.Y));
+        pixels.Push(new Point(p.X, p.Y + 1));
+        pixels.Push(new Point(p.X + 1, p.Y));
+        pixels.Push(new Point(p.X, p.Y - 1));
+    }
+
+    canvas.Invalidate();
+    am.AlgorithmEnd();
+}
+\end{lstlisting}
+
+\subsection{Análisis del Algoritmo FlowFill}
+
+\subsubsection{Implementación Base}
+Implementa un algoritmo de relleno por inundación asíncrono con las siguientes estructuras:
+\begin{itemize}
+    \item HashSet<Point> para píxeles visitados
+    \item Stack<Point> para píxeles pendientes
+    \item Validación de límites del bitmap
+\end{itemize}
+
+\subsubsection{Componentes Principales}
+\paragraph{Validaciones Iniciales}
+\begin{itemize}
+    \item Verificación de coordenadas dentro del bitmap
+    \item Comprobación de color objetivo vs color de reemplazo
+\end{itemize}
+
+\paragraph{Estructuras de Datos}
+\begin{equation}
+    \begin{cases}
+        visited: \text{conjunto de píxeles procesados} \\
+        pixels: \text{pila de píxeles por procesar} \\
+    \end{cases}
+\end{equation}
+
+\subsubsection{Proceso Iterativo}
+Mientras existan píxeles en la pila:
+\begin{enumerate}
+    \item Extraer punto p de la pila
+    \item Validar límites y estado del píxel
+    \item Si es válido:
+    \begin{itemize}
+        \item Marcar como visitado
+        \item Cambiar color
+        \item Agregar vecinos (4-conectividad):
+            \begin{itemize}
+                \item $(x-1,y)$ - izquierda
+                \item $(x,y+1)$ - abajo
+                \item $(x+1,y)$ - derecha
+                \item $(x,y-1)$ - arriba
+            \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Características Técnicas}
+\paragraph{Eficiencia}
+\begin{itemize}
+    \item \textbf{Complejidad Temporal}: $O(w \times h)$ donde w,h son dimensiones del bitmap
+    \item \textbf{Complejidad Espacial}: $O(w \times h)$ para estructuras auxiliares
+    \item \textbf{Operaciones por píxel}:
+    \begin{itemize}
+        \item 1 operación de GetPixel
+        \item 1 operación de SetPixel asíncrona
+        \item 4 inserciones en la pila
+        \item 1 inserción en conjunto visitado
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Características Asíncronas}
+\begin{itemize}
+    \item Control de animación cada 100 píxeles
+    \item Soporte para cancelación
+    \item Actualización visual del canvas
+\end{itemize}
+
+\subsubsection{Optimizaciones}
+\begin{itemize}
+    \item Uso de HashSet para búsqueda O(1)
+    \item Validación temprana de límites
+    \item Actualización visual optimizada
+    \item Control de redundancia de píxeles
+\end{itemize}
+
+\subsubsection{Consideraciones de Rendimiento}
+\begin{itemize}
+    \item Consumo de memoria proporcional al área a rellenar
+    \item Puede requerir optimización para áreas extensas
+    \item La implementación iterativa es más estable que la recursiva
+\end{itemize}
+
+\section{Manual de Usuario}
+
+\subsection{Interfaz Principal}
+La aplicación presenta una interfaz gráfica con:
+\begin{itemize}
+    \item Canvas de dibujo (400x400 píxeles)
+    \item Panel de controles para diferentes algoritmos
+    \item Opciones de animación y limpieza
+\end{itemize}
+
+\subsection{Dibujo de Líneas}
+\subsubsection{Entrada de Datos}
+\begin{itemize}
+    \item Coordenadas iniciales $(x_0,y_0)$
+    \item Coordenadas finales $(x_1,y_1)$
+    \item Rango válido: [0,399] para cada coordenada
+\end{itemize}
+
+\subsubsection{Algoritmos Disponibles}
+\begin{enumerate}
+    \item \textbf{DDA}: Botón "Draw DDA"
+    \item \textbf{Bresenham}: Botón "Draw Bresenham"
+\end{enumerate}
+
+\subsection{Dibujo de Círculos}
+\subsubsection{Parámetros Requeridos}
+\begin{itemize}
+    \item Centro $(x,y)$: Coordenadas en rango [0,399]
+    \item Radio $(r)$: Valor positivo
+    \item Validación: El círculo debe estar dentro del canvas
+\end{itemize}
+
+\subsection{Dibujo de Rombo}
+\subsubsection{Parámetros}
+\begin{itemize}
+    \item Ancho: Valor positivo menor a 400
+    \item Alto: Valor positivo menor a 400
+    \item Centro: Automáticamente en el centro del canvas
+\end{itemize}
+
+\subsection{Herramienta de Relleno}
+\begin{itemize}
+    \item Activación: Click en área a rellenar
+    \item Color de relleno: Negro
+    \item Disponible cuando no hay animaciones en proceso
+\end{itemize}
+
+\subsection{Control de Animaciones}
+\begin{itemize}
+    \item \textbf{Checkbox Animations Enabled}: Activa/desactiva animaciones
+    \item \textbf{Botón Cancel Animation}: Detiene la animación actual
+    \item \textbf{Botón Clear Canvas}: Limpia el área de dibujo
+\end{itemize}
+
+\subsection{Estados del Sistema}
+\subsubsection{Durante la Animación}
+\begin{itemize}
+    \item Botones de dibujo deshabilitados
+    \item Relleno deshabilitado
+    \item Botón de cancelación habilitado
+\end{itemize}
+
+\subsubsection{Estado Normal}
+\begin{itemize}
+    \item Todos los botones de dibujo habilitados
+    \item Relleno habilitado
+    \item Botón de cancelación deshabilitado
+\end{itemize}
+
+\subsection{Mensajes de Error}
+El sistema muestra alertas cuando:
+\begin{itemize}
+    \item Valores fuera de rango [0,399]
+    \item Radio del círculo menor o igual a cero
+    \item Círculo fuera de los límites del canvas
+    \item Dimensiones de rombo inválidas
+\end{itemize}
+
+\end{document}
